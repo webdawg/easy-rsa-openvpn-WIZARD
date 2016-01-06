@@ -1,0 +1,383 @@
+#!/bin/bash
+# webdawg@gmail.com
+# requires, easy-rsa, openvpn, ssl stuff, sed
+
+# set -e causes the shell to exit if any subcommand or pipeline returns a non-zero status.
+
+# TODO
+# Add ccd dir
+# Add tap Stuff
+# Add previous/existing config pull for mass creation
+# ovpn management?
+# dns
+# all traffic redirect
+# interfaces to bind to
+# allow change of cipher
+# specification of user and group
+# status openvpn-status.log
+# just client generation script
+# save all variables
+
+
+
+set -e
+
+echo "So unless you are getting these certs signed, a lot of this does not matter."
+#echo "We are going to ask the questions anyways.  If I remember correctly, you"
+#echo "could put in a . and it would still work.  While still heavly in use today"
+#echo "these concepts are antiquated and for human use really."
+echo ""
+
+#KEY COUNTRY
+
+echo "Please enter the KEY_COUNTRY variable for your vars file."
+echo "Enter for a default \"US\""
+
+read key_country_input
+
+if [ -z "$key_country_input" ]; then
+	key_country_input="US"
+fi
+
+echo "Key Country set to: $key_country_input"
+echo ""
+
+#KEY PROVINCE
+
+echo "Please enter the KEY_PROVINCE variable for your vars file."
+echo "Enter for default \"CA\""
+
+read key_province_input
+
+if [ -z "$key_province_input" ]; then
+	key_province_input="CA"
+fi
+
+echo "Key Province set to: $key_province_input"
+echo ""
+
+
+#KEY CITY
+
+echo "Please enter the KEY_CITY variable for your vars file."
+echo "Enter for default \"SanFrancisco\""
+
+read key_city_input
+
+if [ -z "$key_city_input" ]; then
+	key_city_input="SanFrancisco"
+fi
+
+echo "Key City set to: $key_city_input"
+echo ""
+
+#KEY ORGANIZATION
+
+echo "Please enter the KEY_ORG variable for your vars file."
+echo "Enter for default \"Fort-Funston\""
+
+read key_org_input
+
+if [ -z "$key_org_input" ]; then
+	key_org_input="Fort-Funston"
+fi
+
+echo "Key Organization set to: $key_org_input"
+echo ""
+
+#KEY EMAIL
+
+echo "Please enter the KEY_EMAIL variable for your vars file."
+echo "Enter for default \"mail@domain\""
+
+read key_email_input
+
+if [ -z "$key_email_input" ]; then
+	key_email_input="mail@domain"
+fi
+
+echo "Key Email set to: $key_email_input"
+echo ""
+echo ""
+
+#KEY Organizational Unit
+
+echo "Please enter the KEY_OU variable for your vars file."
+echo "Enter for default \"MyOrganizationalUnit\""
+
+read key_ou_input
+
+if [ -z "$key_ou_input" ]; then
+	key_ou_input="MyOrganizationalUnit"
+fi
+
+echo "Key Organizational Unit set to: $key_ou_input"
+echo ""
+echo ""
+
+echo "Now on to the fun stuff! You too can encrypt!"
+echo ""
+echo "DH parms have recently been discovered to be vulnerable.  It is not that the"
+echo "math is bad, but instead that the same DH parms were being used across"
+echo "different hardware/stuff.  Everyone should use their own!"
+echo "Anyways, I have always made my own, and every guide I have read does the same."
+echo ""
+echo "I also use 4096 key sizes as default in this guide"
+echo ""
+echo ""
+#KEY Size Input
+echo "Please enter the KEY_SIZE variable for your vars file."
+echo "Enter for default \"4096\""
+
+read key_size_input
+
+if [ -z "$key_size_input" ]; then
+	key_size_input="4096"
+fi
+
+echo "Key Size set to: $key_size_input"
+echo ""
+
+
+#CA Expiry Number of Days
+
+echo "Please enter the CA_EXPIRE variable for your vars file."
+echo "Enter for default \"3650\""
+
+read ca_expire_input
+
+if [ -z "$ca_expire_input" ]; then
+	ca_expire_input="3650"
+fi
+
+echo "Key Size set to: $ca_expire_input"
+echo ""
+
+#KEY Expiry Number of Days
+
+echo "Please enter the KEY_EXPIRE variable for your vars file."
+echo "Enter for default \"3650\""
+
+read key_expire_input
+
+if [ -z "$key_expire_input" ]; then
+	key_expire_input="3650"
+fi
+
+echo "Key Size set to: $key_expire_input"
+echo ""
+
+#KEY Name
+
+echo "Please enter the KEY_NAME variable for your vars file."
+echo "Enter for default \"EasyRSA\""
+
+read key_name_input
+
+if [ -z "$key_name_input" ]; then
+	key_name_input="EasyRSA"
+fi
+
+echo "Key Name set to: $key_name_input"
+echo ""
+
+echo "Is this good?"
+
+echo "Key Country: $key_country_input"
+echo "Key Province: $key_province_input"
+echo "Key City: $key_city_input"
+echo "Key Organization: $key_org_input"
+echo "Key Email: $key_email_input"
+echo "Key Organizational Unit: $key_ou_input"
+echo "Key Size: $key_size_input"
+echo "CA Expire: $ca_expire_input"
+echo "Key Expire: $key_expire_input"
+echo "Key Name: $key_name_input"
+
+export KEY_NAME="EasyRSA"
+
+echo ""
+read -p "Press [Enter] key if these are correct and we can write them to your vars file..."
+echo ""
+echo "Writing Changes"
+sed -i "s/export KEY_COUNTRY=.*/export KEY_COUNTRY=\"$key_country_input\"/" vars
+sed -i "s/export KEY_PROVINCE=.*/export KEY_PROVINCE=\"$key_province_input\"/" vars
+sed -i "s/export KEY_CITY=.*/export KEY_CITY=\"$key_city_input\"/" vars
+sed -i "s/export KEY_ORG=.*/export KEY_ORG=\"$key_org_input\"/" vars
+sed -i "s/export KEY_EMAIL=.*/export KEY_EMAIL=\"$key_email_input\"/" vars
+sed -i "s/export KEY_OU=.*/export KEY_OU=\"$key_ou_input\"/" vars
+sed -i "s/export KEY_SIZE=.*/export KEY_SIZE=\"$key_size_input\"/" vars
+sed -i "s/export CA_EXPIRE=.*/export CA_EXPIRE=\"$ca_expire_input\"/" vars
+sed -i "s/export KEY_EXPIRE=.*/export KEY_EXPIRE=\"$key_expire_input\"/" vars
+sed -i "s/export KEY_NAME=.*/export KEY_NAME=\"$key_name_input\"/" vars
+
+read -p "Press [Enter] key if you would like to initilize your CA..."
+echo "Working!"
+mkdir keys
+touch keys/index.txt
+echo 01 > keys/serial
+. ./vars
+./clean-all
+./build-ca
+./build-dh
+echo "Creating ta.key for openvpn TLS"
+openvpn --genkey --secret ta.key
+mv ta.key keys
+mkdir openvpn_server_config
+
+#KEY Name
+
+echo "Please enter the servername for your OpenVPN server Cert"
+echo "Enter for default \"server\""
+
+read server_name_input
+
+if [ -z "$server_name_input" ]; then
+	server_name_input="server"
+fi
+
+echo "Key Name set to: $server_name_input"
+echo "Writing OpenVPN servername to wizard.conf"
+echo server_name_input=\"$server_name_input\" >> wizard.conf
+echo ""
+./build-key-server $server_name_input
+cp keys/${server_name_input}.crt openvpn_server_config
+cp keys/${server_name_input}.key openvpn_server_config
+cp keys/ca.crt openvpn_server_config
+cp keys/ta.key openvpn_server_config
+cp keys/dh${key_size_input}.pem openvpn_server_config
+echo "Time to generate openvpn server configuration"
+
+#ovpn port number
+
+echo "Port number?"
+echo "Enter for default \"1194\""
+read ovpn_port
+if [ -z "$ovpn_port" ]; then
+	ovpn_port="1194"
+fi
+echo "port number set to: $ovpn_port"
+
+#ovpn protocol
+
+echo "Protocol (udp/tcp)  When using udp and ta.key, it should silently drop UDP packets"
+echo "Enter for default \"udp\""
+read ovpn_proto
+if [ -z "$ovpn_proto" ]; then
+	ovpn_proto="udp"
+fi
+
+echo "Protocol set to: $ovpn_proto"
+
+#ovpn device type
+
+echo "dev tun or tap.  tun is layer 3 tap is layer 2"
+echo "right now this script does not handle tap but will generate something you can edit"
+echo "Enter for default \"tun\""
+read ovpn_dev
+if [ -z "$ovpn_dev" ]; then
+	ovpn_dev="tun"
+fi
+
+echo "Device type set to $ovpn_dev"
+
+#ovpn internal routing network
+
+echo "set the tun internal vpn network in format \"10.9.8.0 255.255.255.0\""
+echo "Enter for default \"10.9.8.0 255.255.255.0\""
+read ovpn_server
+if [ -z "$ovpn_server" ]; then
+	ovpn_server="10.9.8.0 255.255.255.0"
+fi
+
+echo "Internal routing network set to: $ovpn_server"
+
+echo "Creating server configuration file"
+
+echo "port $ovpn_port" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "proto $ovpn_proto" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "dev $ovpn_dev" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "server $ovpn_server" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+
+echo "ca ca.crt" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "cert ${server_name_input}.crt" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "key ${server_name_input}.key" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "dh ${key_size_input}.pem" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "tls-auth ta.key 0" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+
+#Just some standard parms
+
+echo "keepalive 10 120" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "comp-lzo" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+
+#for modification later cipher
+echo "cipher AES-256-CBC" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "persist-key" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+
+#should be fix on tun/tap switching addtion
+echo "persist-tun" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+
+echo "status log/${server_name_input}_${ovpn_port}_${ovpn_proto}.log" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+
+echo "client-to-client" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+
+touch openvpn_server_config/ipp.txt
+mkdir openvpn_server_config/log
+touch openvpn_server_config/log/${server_name_input}_${ovpn_port}_${ovpn_proto}.log
+
+#create a client
+echo "Lets create a client!"
+
+#ovpn remote server address
+
+echo ""
+
+
+while [ -z "$ovpn_remote" ]; do
+	echo "You must set the remote address or hostname:"
+	read ovpn_remote
+done
+
+echo "Remote server set to $ovpn_remote"
+
+#client name
+
+echo "Please enter a client name"
+echo "Enter for default \"client\""
+
+read ovpn_clientname
+
+if [ -z "$ovpn_clientname" ]; then
+	ovpn_clientname="client"
+fi
+
+echo "Key Size set to: $ca_expire_input"
+echo ""
+
+echo "Creating client configuration and certs"
+
+mkdir openvpn_client_config/
+mkdir openvpn_client_config/${ovpn_clientname}
+
+echo "client" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "dev $ovpn_dev" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "proto $ovpn_proto" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "remote $ovpn_remote $ovpn_port" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "ca ca.crt" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "cert ${ovpn_clientname}.crt" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "key ${ovpn_clientname}.key" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "comp-lzo" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "persist-key" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "persist-tun" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "cipher AES-256-CBC" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "ns-cert-type server" >> openvpn_client_config/${ovpn_clientname}/client.conf
+echo "tls-auth ta.key 1" >> openvpn_client_config/${ovpn_clientname}/client.conf
+
+./build-key $ovpn_clientname
+
+cp keys/ca.crt openvpn_client_config/${ovpn_clientname}/
+cp keys/${ovpn_clientname}.crt openvpn_client_config/${ovpn_clientname}/
+cp keys/${ovpn_clientname}.key openvpn_client_config/${ovpn_clientname}/
+cp keys/ta.key openvpn_client_config/${ovpn_clientname}/
+echo "Done!"
+
