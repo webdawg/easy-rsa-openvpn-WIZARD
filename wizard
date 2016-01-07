@@ -18,9 +18,17 @@
 # just client generation script
 # save all variables
 
-
-
 set -e
+
+echo "To use this script, place it in same directory as the latest copy of EasyRSA 2 (not 3)."
+read -p "Press [Enter] to continue."
+
+echo "Checking for needed utils"
+command -v openvpn >/dev/null 2>&1 || { echo >&2 "I require openvpn (to generate ta.key) but it's not installed.  Aborting."; exit 1; }
+command -v sed >/dev/null 2>&1 || { echo >&2 "I require sed (to mod configs) but it's not installed.  Aborting."; exit 1; }
+command -v ./build-dh >/dev/null 2>&1 || { echo >&2 "I require easy-rsa 2 (./build-dh) but it's not installed or I am not in its directory.  Aborting."; exit 1; }
+command -v ./build-key-server >/dev/null 2>&1 || { echo >&2 "I require easy-rsa 2 (./build-key-server) but it's not installed or I am not in its directory.  Aborting."; exit 1; }
+command -v ./build-key >/dev/null 2>&1 || { echo >&2 "I require easy-rsa 2 (./build-key-server) but it's not installed or I am not in its directory.  Aborting."; exit 1; }
 
 echo "So unless you are getting these certs signed, a lot of this does not matter."
 #echo "We are going to ask the questions anyways.  If I remember correctly, you"
