@@ -20,7 +20,7 @@
 
 set -e
 
-echo "To use this script, place it in same directory as the latest copy of EasyRSA 2 (not 3)."
+echo "Hello,  Are you ready?"
 read -p "Press [Enter] to continue."
 
 echo "Checking for needed utils"
