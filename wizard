@@ -310,7 +310,7 @@ echo "server $ovpn_server" >> openvpn_server_config/${server_name_input}_${ovpn_
 echo "ca ca.crt" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
 echo "cert ${server_name_input}.crt" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
 echo "key ${server_name_input}.key" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
-echo "dh ${key_size_input}.pem" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
+echo "dh dh${key_size_input}.pem" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
 echo "tls-auth ta.key 0" >> openvpn_server_config/${server_name_input}_${ovpn_port}_${ovpn_proto}.conf
 
 #Just some standard parms
